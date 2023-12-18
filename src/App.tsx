@@ -5,9 +5,14 @@ import { Post } from "./types";
 import PostList from "./components/PostList";
 import AddPost from "./components/AddPost";
 import SetPostsContext from "./context/setPostsContext";
+import Pagination from "./components/Pagination";
+
+const POSTS_PER_PAGE = 10;
 
 function App() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     const savedPosts = localStorage.getItem("posts");
     if (savedPosts !== null) {
@@ -38,30 +43,31 @@ function App() {
     }
   }, []);
 
-  const handleCheckboxChange = (postId: number) => {
-    setPosts((prevPosts) => {
-      const updatedPosts = prevPosts.map((post) => {
-        if (post.id === postId) {
-          return {
-            ...post,
-            liked: !post.liked,
-          };
-        }
-        return post;
-      });
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
-      // Обновляем в localStorage
-      localStorage.setItem("posts", JSON.stringify(updatedPosts));
-
-      return updatedPosts;
-    });
+  const getPagePosts = () => {
+    const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+    const endIndex = startIndex + POSTS_PER_PAGE;
+    return posts.slice(startIndex, endIndex);
   };
 
   return (
     <SetPostsContext.Provider value={setPosts}>
       <MainAppBar />
       <AddPost />
-      <PostList posts={posts} onCheckboxChange={handleCheckboxChange} />
+      <PostList
+        posts={getPagePosts()}
+        onCheckboxChange={(postId: number) => {
+          // Обработка изменения состояния для конкретного поста
+        }}
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(posts.length / POSTS_PER_PAGE)}
+        onPageChange={handlePageChange}
+      />
     </SetPostsContext.Provider>
   );
 }
