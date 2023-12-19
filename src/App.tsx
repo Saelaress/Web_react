@@ -43,6 +43,15 @@ function App() {
     }
   }, []);
 
+  const handleCheckboxChange = (postId: number) => {
+    // Обновление состояния liked
+    const updatedPosts = posts.map((post) =>
+      post.id === postId ? { ...post, liked: !post.liked } : post
+    );
+    setPosts(updatedPosts);
+    localStorage.setItem("posts", JSON.stringify(updatedPosts));
+  };
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
@@ -59,9 +68,7 @@ function App() {
       <AddPost />
       <PostList
         posts={getPagePosts()}
-        onCheckboxChange={(postId: number) => {
-          // Обработка изменения состояния для конкретного поста
-        }}
+        onCheckboxChange={handleCheckboxChange}
       />
       <Pagination
         currentPage={currentPage}
