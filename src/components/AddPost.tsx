@@ -17,13 +17,13 @@ export default function AddPost() {
       setPosts?.((prevPosts) => {
         const newPost = {
           userId: 1,
-          id: prevPosts.length + 1,
+          id: Date.now(), // Генерируем уникальный идентификатор на основе текущего времени
           title,
           body,
           liked: false,
         };
 
-        const updatedPosts = [...prevPosts, newPost];
+        const updatedPosts = [newPost, ...prevPosts];
         localStorage.setItem("posts", JSON.stringify(updatedPosts));
 
         return updatedPosts;
